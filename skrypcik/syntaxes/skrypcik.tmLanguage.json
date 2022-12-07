@@ -1,0 +1,67 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Skrypcik",
+	"patterns": [
+		{
+			"include": "#comments"
+		},
+		{
+			"include": "#operators"
+		},
+		{
+			"include": "#keywords"
+		},
+		{
+			"include": "#reserved_words"
+		},
+		{
+			"include": "#strings"
+		}
+	],
+	"repository": {
+		"keywords": {
+			"patterns": [{
+				"name": "keyword.control.skrypcik",
+				"match": "\\b(jeżeli|kiedy|przez|oddaj|funkcja|koniec|albojeżeli|ewentualnie)\\b"
+			}]
+		},
+		"operators": {
+			"patterns": [{
+				"name": "keyword.other.unit.skrypcik",
+				"match": "\\b(pokaż|wykonaj|liczba_pi|wprowadź|wprowadź_liczbę|dodaj|dlugość|czy_lista|czy_ciąg|czy_liczba|czy_funkcja|wyczyść|pęknij|losowa_liczba|losowa_unosząca|czyTrójkąt|sufit|podłoga|okrągły|pierwiastek|pomoc)\\b"
+			}]
+		},
+		"reserved_words": {
+			"patterns": [{
+				"name": "keyword.other.skrypcik",
+				"match": "\\b(oraz|albo|wtedy|zmienna|do)\\b"
+			}]
+		},
+		"strings": {
+			"name": "string.quoted.double.skrypcik",
+			"begin": "\"",
+			"end": "\"",
+			"patterns": [
+				{
+					"name": "constant.character.escape.skrypcik",
+					"match": "\\\\."
+				}
+			]
+		},
+		"comments":{
+			"patterns":[
+				{
+					"begin": "#",
+					"beginCaptures": {
+						"0":{
+							"name": "punctuation.definition.comment.skrypcik"
+						}
+					},
+					"end": "\\n",
+					"name": "comment.line.number-sign.skrypcik"
+				}
+			]
+		}	
+	},
+	"scopeName": "source.skr"
+}
