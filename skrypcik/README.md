@@ -1,4 +1,18 @@
-# skrypcik
-Polska gurom
+# skrypcik README
 
-Zapominasz jak jest "zmienna" po angielsku? Nie umiesz odmienić "to be"? Oto rozwiązanie dla ciebie! W pełni spolszczona wersja pytonga!
+Obługa języka Skrypcik.
+
+## Funkcje rozszerzenia
+
+- kolorowanie składni
+
+## Wymagania
+
+- Python3
+- Skrypcik
+
+## Po więcej informacji
+
+* www.skrypcik.pl
+* spojowicz_business@interia.pl
+

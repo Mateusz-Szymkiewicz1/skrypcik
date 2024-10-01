@@ -109,6 +109,7 @@ TT_DEC     	= 'DEC'
 TT_MINUS    	= 'MINUS'
 TT_MUL      	= 'MUL'
 TT_DIV      	= 'DIV'
+TT_MOD        = "MOD"
 TT_POW				= 'POW'
 TT_EQ					= 'EQ'
 TT_LPAREN   	= 'LPAREN'
@@ -208,6 +209,9 @@ class Lexer:
         self.advance()
       elif self.current_char == '/':
         tokens.append(Token(TT_DIV, pos_start=self.pos))
+        self.advance()
+      elif self.current_char == '%':
+        tokens.append(Token(TT_MOD, pos_start=self.pos))
         self.advance()
       elif self.current_char == '^':
         tokens.append(Token(TT_POW, pos_start=self.pos))
@@ -728,7 +732,7 @@ class Parser:
     return self.bin_op(self.term, (TT_PLUS, TT_MINUS, TT_INC, TT_DEC))
 
   def term(self):
-    return self.bin_op(self.factor, (TT_MUL, TT_DIV))
+    return self.bin_op(self.factor, (TT_MUL, TT_DIV, TT_MOD))
 
   def factor(self):
     res = ParseResult()
@@ -1353,6 +1357,9 @@ class Value:
 
   def dived_by(self, other):
     return None, self.illegal_operation(other)
+  
+  def mod_by(self, other):
+    return None, self.illegal_operation(other)
 
   def powed_by(self, other):
     return None, self.illegal_operation(other)
@@ -1434,6 +1441,12 @@ class Number(Value):
         )
 
       return Number(self.value / other.value).set_context(self.context), None
+    else:
+      return None, Value.illegal_operation(self, other)
+
+  def mod_by(self, other):
+    if isinstance(other, Number):
+      return Number(self.value % other.value).set_context(self.context), None
     else:
       return None, Value.illegal_operation(self, other)
 
@@ -1803,6 +1816,25 @@ class BuiltInFunction(BaseFunction):
     return RTResult().success(Number(value2))
   execute_doLiczby.arg_names = ["value"]
 
+  def execute_doBinarnej(self, exec_ctx):
+    value = exec_ctx.symbol_table.get("value")
+    try:
+      value2 = bin(exec_ctx.symbol_table.get("value").value).replace("0b", "")
+    except:
+      return RTResult().failure(RTError(
+        self.pos_start, self.pos_end,
+        "Konwersja nieudana!",
+        exec_ctx
+      ))
+    if not isinstance(value, Number):
+      return RTResult().failure(RTError(
+        self.pos_start, self.pos_end,
+        "Argument musi być liczbą",
+        exec_ctx
+      ))
+    return RTResult().success(String(value2))
+  execute_doBinarnej.arg_names = ["value"]
+
   def execute_doCiągu(self, exec_ctx):
     value = exec_ctx.symbol_table.get("value")
     value2 = str(exec_ctx.symbol_table.get("value").value)
@@ -1815,6 +1847,34 @@ class BuiltInFunction(BaseFunction):
 
     return RTResult().success(String(value2))
   execute_doCiągu.arg_names = ["value"]
+
+  
+  def execute_zlicz(self, exec_ctx):
+    ciag = str(exec_ctx.symbol_table.get("ciag"))
+    do_zliczenia = str(exec_ctx.symbol_table.get("do_zliczenia"))
+    value2 = 0
+    for i in ciag:
+      if i == do_zliczenia:
+        value2 += 1
+    return RTResult().success(Number(value2))
+  execute_zlicz.arg_names = ["ciag", "do_zliczenia"]
+
+  def execute_max_kolejne(self, exec_ctx):
+    ciag = str(exec_ctx.symbol_table.get("ciag"))
+    do_zliczenia = str(exec_ctx.symbol_table.get("do_zliczenia"))
+    value2 = 0
+    tmp = 0
+    for i in ciag:
+        if i != do_zliczenia:
+            if tmp > value2:
+              value2 = tmp
+            tmp = 0
+            continue
+        tmp += 1
+    if tmp > value2:
+      value2 = tmp
+    return RTResult().success(Number(value2))
+  execute_max_kolejne.arg_names = ["ciag", "do_zliczenia"]
   
   def execute_losowa(self, exec_ctx):
     l1 = exec_ctx.symbol_table.get("min").value
@@ -1973,7 +2033,10 @@ BuiltInFunction.okrągły	    = BuiltInFunction("okrągły")
 BuiltInFunction.pierwiastek  = BuiltInFunction("pierwiastek")
 BuiltInFunction.pomoc  = BuiltInFunction("pomoc")
 BuiltInFunction.doLiczby  = BuiltInFunction("doLiczby")
+BuiltInFunction.doBinarnej  = BuiltInFunction("doBinarnej")
 BuiltInFunction.doCiągu  = BuiltInFunction("doCiągu")
+BuiltInFunction.zlicz  = BuiltInFunction("zlicz")
+BuiltInFunction.max_kolejne  = BuiltInFunction("max_kolejne")
 
 #######################################
 # CONTEXT
@@ -2098,6 +2161,8 @@ class Interpreter:
         error = Error(node.pos_start, node.pos_end, "Błąd Dekrementacji", "spróbuj użyć liczby lol")
     elif node.op_tok.type == TT_DIV:
       result, error = left.dived_by(right)
+    elif node.op_tok.type == TT_MOD:
+      result, error = left.mod_by(right)
     elif node.op_tok.type == TT_POW:
       result, error = left.powed_by(right)
     elif node.op_tok.type == TT_EE:
@@ -2307,7 +2372,10 @@ global_symbol_table.set("okrągły", BuiltInFunction.okrągły)
 global_symbol_table.set("pierwiastek", BuiltInFunction.pierwiastek)
 global_symbol_table.set("pomoc", BuiltInFunction.pomoc)
 global_symbol_table.set("doLiczby", BuiltInFunction.doLiczby)
+global_symbol_table.set("doBinarnej", BuiltInFunction.doBinarnej)
 global_symbol_table.set("doCiągu", BuiltInFunction.doCiągu)
+global_symbol_table.set("zlicz", BuiltInFunction.zlicz)
+global_symbol_table.set("max_kolejne", BuiltInFunction.max_kolejne)
 
 def run(fn, text):
   # Generate tokens

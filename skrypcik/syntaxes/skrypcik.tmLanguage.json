@@ -34,7 +34,7 @@
 		"reserved_words": {
 			"patterns": [{
 				"name": "keyword.other.skrypcik",
-				"match": "\\b(oraz|albo|wtedy|zmienna|do)\\b"
+				"match": "\\b(oraz|albo|wtedy|zmienna|do|prawda|fałsz)\\b"
 			}]
 		},
 		"strings": {

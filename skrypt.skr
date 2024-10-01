@@ -1,0 +1,26 @@
+funkcja calkowita(liczba)
+  jeżeli czy_liczba(liczba){
+        jeżeli liczba < 0 albo liczba > 4294967295{
+            pokaż("Niepoprawna liczba!")
+            oddaj fałsz
+        }
+        oddaj prawda
+    }
+    pokaż("Niepoprawna liczba!")
+    oddaj fałsz
+}
+
+pokaż("Wprowadź liczbę: ")
+zmienna liczba = wprowadź_liczbę()
+kiedy calkowita(liczba) == 0 {
+    pokaż("Wprowadź liczbę: ")
+    zmienna liczba = wprowadź_liczbę()
+}
+
+zmienna liczba_bin = doBinarnej(liczba)
+zmienna ile_jedynek = liczba_bin
+zmienna ile_jedynek = zlicz(liczba_bin, "1")
+zmienna ile_kolejnych_jedynek = max_kolejne(liczba_bin, "1")
+pokaż("Liczba: "+liczba_bin)
+pokaż("Jedynki: "+doCiągu(ile_jedynek))
+pokaż("Jedynki pod rząd: "+doCiągu(ile_kolejnych_jedynek))
