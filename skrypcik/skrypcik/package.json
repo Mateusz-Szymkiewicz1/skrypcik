@@ -1,0 +1,26 @@
+{
+  "name": "skrypcik",
+  "displayName": "Skrypcik",
+  "description": "Obsługa języka Skrypcik",
+  "version": "0.0.1",
+  "publisher": "spojowicz",
+  "engines": {
+    "vscode": "^1.71.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "skrypcik",
+      "aliases": ["Skrypcik", "skrypcik"],
+      "extensions": [".skr"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "skrypcik",
+      "scopeName": "source.skr",
+      "path": "./syntaxes/skrypcik.tmLanguage.json"
+    }]
+  }
+}
